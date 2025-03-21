@@ -1,19 +1,19 @@
 import { create } from 'zustand';
 import { Task, Priority, Status } from '../types/task';
-import { generateId } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 interface TaskState {
   tasks: Task[];
   searchQuery: string;
   filterPriority: Priority | 'all';
   filterStatus: Status | 'all';
-  addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
-  updateTask: (id: string, task: Partial<Task>) => void;
-  deleteTask: (id: string) => void;
+  fetchTasks: () => Promise<void>;
+  addTask: (task: Omit<Task, 'id' | 'createdAt'>) => Promise<void>;
+  updateTask: (id: string, task: Partial<Task>) => Promise<void>;
+  deleteTask: (id: string) => Promise<void>;
   setSearchQuery: (query: string) => void;
   setFilterPriority: (priority: Priority | 'all') => void;
   setFilterStatus: (status: Status | 'all') => void;
-  reorderTasks: (tasks: Task[]) => void;
 }
 
 export const useTaskStore = create<TaskState>((set) => ({
@@ -21,33 +21,87 @@ export const useTaskStore = create<TaskState>((set) => ({
   searchQuery: '',
   filterPriority: 'all',
   filterStatus: 'all',
-  
-  addTask: (task) =>
+
+  fetchTasks: async () => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .order('created_at', { ascending: false });
+    console.log(data)
+    if (error) {
+      console.error('Error fetching tasks:', error);
+      return;
+    }
+
+    set({
+      tasks: data?.map((task) => (task)) || [],
+    });
+  },
+
+  addTask: async (task) => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert(task)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding task:', error);
+      return;
+    }
+
     set((state) => ({
       tasks: [
+        data,
         ...state.tasks,
-        {
-          ...task,
-          id: generateId(),
-          createdAt: new Date().toISOString(),
-        },
       ],
-    })),
-    
-  updateTask: (id, updatedTask) =>
+    }));
+  },
+
+  updateTask: async (id, updatedTask) => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(updatedTask)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating task:', error);
+      return;
+    }
+
     set((state) => ({
       tasks: state.tasks.map((task) =>
-        task.id === id ? { ...task, ...updatedTask } : task
+        task.id === id
+          ? {
+              ...task,
+              ...data,
+            }
+          : task
       ),
-    })),
-    
-  deleteTask: (id) =>
+    }));
+  },
+
+  deleteTask: async (id) => {
+    const { error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting task:', error);
+      return;
+    }
+
     set((state) => ({
       tasks: state.tasks.filter((task) => task.id !== id),
-    })),
-    
+    }));
+  },
+
   setSearchQuery: (query) => set({ searchQuery: query }),
+
   setFilterPriority: (priority) => set({ filterPriority: priority }),
+
   setFilterStatus: (status) => set({ filterStatus: status }),
-  reorderTasks: (tasks) => set({ tasks }),
 }));
