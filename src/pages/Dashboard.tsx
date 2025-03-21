@@ -1,11 +1,17 @@
-import React from 'react';
+import  { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { TaskList } from '../components/TaskList';
 import { TaskFilters } from '../components/TaskFilters';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { useTaskStore } from '../store/useTaskStore';
 
 export function Dashboard() {
+  const fetchTasks = useTaskStore((state) => state.fetchTasks);
+
+  useEffect(() => {
+    fetchTasks(); 
+  }, [fetchTasks]);
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">

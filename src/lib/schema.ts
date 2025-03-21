@@ -7,7 +7,7 @@ export const taskSchema = z.object({
   description: z.string()
     .min(1, 'Description is required')
     .max(500, 'Description must be less than 500 characters'),
-  dueDate: z.string()
+  due_date: z.string()
     .refine((date) => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
