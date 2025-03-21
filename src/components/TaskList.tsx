@@ -136,7 +136,7 @@ export function TaskList() {
                               </span>
                               <span className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                                 <Clock className="mr-1.5 h-4 w-4" />
-                                {format(new Date(task.dueDate), 'MMM d, yyyy')}
+                                {format(new Date(task.due_date), 'MMM d, yyyy')}
                               </span>
                             </div>
                           </div>

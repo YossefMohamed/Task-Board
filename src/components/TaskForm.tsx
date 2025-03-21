@@ -20,7 +20,7 @@ export function TaskForm({ task, isEditing }: TaskFormProps) {
   const [formData, setFormData] = React.useState({
     title: task?.title || '',
     description: task?.description || '',
-    dueDate: task?.dueDate ? new Date(task.dueDate) : addDays(new Date(), 1),
+    due_date: task?.due_date ? new Date(task.due_date) : addDays(new Date(), 1),
     priority: task?.priority || 'medium',
     status: task?.status || 'todo',
   });
@@ -40,14 +40,14 @@ export function TaskForm({ task, isEditing }: TaskFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateDate(formData.dueDate)) {
+    if (!validateDate(formData.due_date)) {
       return;
     }
 
     if (isEditing && task) {
-      updateTask(task.id, { ...formData, dueDate: formData.dueDate.toISOString().split('T')[0] });
+      updateTask(task.id, { ...formData, due_date: formData.due_date.toISOString().split('T')[0] });
     } else {
-      addTask({ ...formData, dueDate: formData.dueDate.toISOString().split('T')[0] } as Omit<Task, 'id' | 'createdAt'>);
+      addTask({ ...formData, due_date: formData.due_date.toISOString().split('T')[0] } as Omit<Task, 'id' | 'createdAt'>);
     }
 
     navigate('/');
@@ -84,10 +84,10 @@ export function TaskForm({ task, isEditing }: TaskFormProps) {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
           <div className="mt-1 relative">
           <DatePicker
-            selected={formData.dueDate}
+            selected={formData.due_date}
             onChange={(date: Date | null) => {
               if (date) {
-                setFormData({ ...formData, dueDate: date });
+                setFormData({ ...formData, due_date: date });
                 validateDate(date);
               }
             }}
