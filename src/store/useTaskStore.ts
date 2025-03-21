@@ -27,8 +27,8 @@ export const useTaskStore = create<TaskState>((set) => ({
       .from('tasks')
       .select('*')
       .order('created_at', { ascending: false });
-    console.log(data)
-    if (error) {
+
+      if (error) {
       console.error('Error fetching tasks:', error);
       return;
     }
@@ -59,29 +59,52 @@ export const useTaskStore = create<TaskState>((set) => ({
   },
 
   updateTask: async (id, updatedTask) => {
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              ...updatedTask,
+            }
+          : task
+      ),
+    }));
+  
     const { data, error } = await supabase
       .from('tasks')
       .update(updatedTask)
       .eq('id', id)
       .select()
       .single();
-
+  
     if (error) {
       console.error('Error updating task:', error);
+  
+      set((state) => ({
+        tasks: state.tasks.map((task) =>
+          task.id === id
+            ? {
+                ...task,
+                ...state.tasks.find((t) => t.id === id),
+              }
+            : task
+        ),
+      }));
       return;
     }
-
+  
     set((state) => ({
       tasks: state.tasks.map((task) =>
         task.id === id
           ? {
               ...task,
-              ...data,
+              ...data, 
             }
           : task
       ),
     }));
   },
+  
 
   deleteTask: async (id) => {
     const { error } = await supabase
