@@ -1,9 +1,8 @@
-import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { TaskForm } from '../components/TaskForm';
 import { useTaskStore } from '../store/useTaskStore';
 
-export function EditTask() {
+export const EditTask =() => {
   const { id } = useParams<{ id: string }>();
   const task = useTaskStore((state) => 
     state.tasks.find((t) => t.id === id)

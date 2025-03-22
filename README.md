@@ -79,10 +79,6 @@ src/
 
 ## Assumptions and Design Decisions
 
-1. Authentication
-   - Email/password authentication
-   - Protected routes and data access
-
 2. Task Organization
    - Three-column Kanban board layout
    - Drag and drop for status updates
@@ -106,3 +102,10 @@ src/
 - Activity history
 - Data export/import
 - Team management features
+- Authentication
+  - Email/password authentication
+  - Protected routes and data access
+- User management
+  - User profiles
+  - Role-based access control
+  - Multi-user collaboration

@@ -3,7 +3,7 @@ import { Dashboard } from './pages/Dashboard';
 import { NewTask } from './pages/NewTask';
 import { EditTask } from './pages/EditTask';
 
-function App() {
+const App =() => {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
